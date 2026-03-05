@@ -13,3 +13,4 @@ fpdf2>=2.7.9
 qrcode[pil]>=7.4.2
 cryptography>=42.0.8
 redis>=5.0.4
+email-validator
