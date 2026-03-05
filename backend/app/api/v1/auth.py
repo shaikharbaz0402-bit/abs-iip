@@ -22,12 +22,19 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login", response_model=Token)
 def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)) -> Token:
+
     user = db.scalar(select(User).where(User.email == payload.email, User.is_active.is_(True)))
+
     if user is None or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     user.last_login_at = datetime.now(timezone.utc)
-    token = create_access_token(subject=user.id, tenant_id=user.tenant_id, role=user.role.value)
+
+    token = create_access_token(
+        subject=user.id,
+        tenant_id=user.tenant_id,
+        role=user.role.value
+    )
 
     log_event(
         db,
@@ -41,16 +48,22 @@ def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)
     )
 
     db.commit()
+
     return Token(access_token=token)
 
 
 @router.post("/token", response_model=Token)
 def token_login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
     request: Request,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db),
 ) -> Token:
-    payload = LoginRequest(email=form_data.username, password=form_data.password)
+
+    payload = LoginRequest(
+        email=form_data.username,
+        password=form_data.password
+    )
+
     return login(payload=payload, request=request, db=db)
 
 
@@ -66,6 +79,7 @@ def create_user(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_admin_user),
 ) -> UserOut:
+
     tenant_id = payload.tenant_id or current_user.tenant_id
 
     if current_user.role not in {UserRole.SUPER_ADMIN, UserRole.ABS_ENGINEER} and tenant_id != current_user.tenant_id:
@@ -80,6 +94,7 @@ def create_user(
     validate_seat_limit(db, tenant_id)
 
     exists = db.scalar(select(User).where(User.email == payload.email))
+
     if exists is not None:
         raise HTTPException(status_code=409, detail="User already exists")
 
@@ -91,6 +106,7 @@ def create_user(
         role=payload.role,
         is_active=True,
     )
+
     db.add(user)
 
     log_event(
@@ -106,6 +122,5 @@ def create_user(
 
     db.commit()
     db.refresh(user)
+
     return UserOut.model_validate(user)
-
-
