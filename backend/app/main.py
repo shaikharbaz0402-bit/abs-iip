@@ -19,6 +19,7 @@ app = FastAPI(
     description="Multi-tenant industrial bolt integrity monitoring and analytics SaaS platform.",
 )
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
@@ -28,11 +29,13 @@ app.add_middleware(
 )
 
 
+# Startup event (initialize database)
 @app.on_event("startup")
 def startup_event() -> None:
     init_db()
 
 
+# Root landing page
 @app.get("/", response_class=HTMLResponse)
 def landing_page() -> str:
     return """
@@ -70,9 +73,14 @@ def landing_page() -> str:
     """
 
 
+# Health check endpoint
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
-    return HealthResponse(status="ok", timestamp=datetime.now(timezone.utc))
+    return HealthResponse(
+        status="ok",
+        timestamp=datetime.now(timezone.utc)
+    )
 
 
+# Include API routes
 app.include_router(api_router, prefix=settings.api_prefix)
