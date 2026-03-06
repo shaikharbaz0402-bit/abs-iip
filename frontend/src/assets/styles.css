@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #f2f5f8;
+  --color-panel: #ffffff;
+  --color-panel-soft: #eef3f7;
+  --color-text: #111827;
+  --color-text-muted: #475569;
+  --color-accent: #0f766e;
+  --color-accent-alt: #dc2626;
+  --color-border: #dbe3ec;
+}
+
+.dark {
+  --color-bg: #0a0f16;
+  --color-panel: #121b27;
+  --color-panel-soft: #1b2738;
+  --color-text: #e6edf5;
+  --color-text-muted: #93a6bd;
+  --color-accent: #2dd4bf;
+  --color-accent-alt: #f87171;
+  --color-border: #253246;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  background: radial-gradient(circle at top right, rgba(15, 118, 110, 0.18), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(220, 38, 38, 0.14), transparent 35%), var(--color-bg);
+  color: var(--color-text);
+}
+
+input,
+button,
+select,
+textarea {
+  font: inherit;
+}
+
+.panel {
+  @apply rounded-xl border border-border bg-panel shadow-panel;
+}
+
+.panel-title {
+  @apply text-lg font-semibold text-text;
+}
+
+.field-label {
+  @apply mb-2 block text-sm font-medium text-textMuted;
+}
+
+.field-input {
+  @apply w-full rounded-lg border border-border bg-panelSoft px-3 py-2 text-sm text-text outline-none transition focus:border-accent focus:ring-1 focus:ring-accent;
+}
+
+.metric-value {
+  @apply text-2xl font-bold;
+}
+
+.metric-label {
+  @apply text-sm text-textMuted;
+}
