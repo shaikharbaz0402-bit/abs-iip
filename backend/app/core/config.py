@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     environment: str = "development"
     api_prefix: str = "/api/v1"
 
-    database_url: str = "postgresql+psycopg://abs:abs@db:5432/abs_iip"
+    database_url: str = ""
 
     jwt_secret_key: str = "change-me"
     jwt_algorithm: str = "HS256"
